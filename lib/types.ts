@@ -12,6 +12,8 @@ export type StoryChoice = {
   outcome: string;
   deltas: StatDelta;
   memory: string;
+  nextNodeId?: string;
+  endsStory?: boolean;
 };
 
 export type StoryNode = {
@@ -49,6 +51,15 @@ export type CharacterCard = {
   resources: string[];
   dilemma: string;
   isCustom: boolean;
+  storyPreferences?: StoryPreferences;
+  promptConstraints?: string[];
+};
+
+export type StoryPreferences = {
+  difficulty: number;
+  conflict: number;
+  drama: number;
+  realism: number;
 };
 
 export type ChoiceRecord = {
@@ -64,7 +75,10 @@ export type GameRun = {
   id: string;
   character: CharacterCard;
   presetId?: string;
+  story: StoryNode[];
   currentIndex: number;
+  currentNodeId?: string;
+  visitedNodeIds?: string[];
   choices: ChoiceRecord[];
   branch: number;
   createdAt: number;

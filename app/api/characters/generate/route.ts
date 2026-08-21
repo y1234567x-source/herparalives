@@ -13,6 +13,19 @@ export async function POST(request: Request) {
   if (crisis.test(situation)) return NextResponse.json({ safeMode: true, message: "你描述的情况可能涉及现实安全风险。请优先联系可信赖的人、当地紧急服务或专业支持；这里暂不把它改编成游戏故事。" }, { status: 422 });
   if (situation.length < 12 || situation.length > 500) return NextResponse.json({ error: "请用12—500字描述处境" }, { status: 400 });
   const safe = classify(situation);
+  const clamp = (value: unknown, fallback: number) => Math.min(5, Math.max(1, Number(value) || fallback));
+  const storyPreferences = {
+    difficulty: clamp(body.preferences?.difficulty, 3),
+    conflict: clamp(body.preferences?.conflict, 3),
+    drama: clamp(body.preferences?.drama, 2),
+    realism: clamp(body.preferences?.realism, 4),
+  };
+  const promptConstraints = [
+    `选择难度 ${storyPreferences.difficulty}/5：选项应体现相应程度的现实代价，但不设置明显正确答案。`,
+    `冲突强度 ${storyPreferences.conflict}/5：冲突必须来自人物目标、关系边界和有限资源。`,
+    `戏剧程度 ${storyPreferences.drama}/5：允许相应数量的转折，但禁止依赖巧合、猎奇或强行反转。`,
+    `现实质感 ${storyPreferences.realism}/5：职业、经济、关系与时间成本必须符合真实生活逻辑。`,
+  ];
   // The original text intentionally goes out of scope after this request and is never logged.
-  return NextResponse.json({ card: { name: String(body.name || "若岚").slice(0, 12), portrait: Number(body.portrait || 0), ...safe } });
+  return NextResponse.json({ card: { name: String(body.name || "若岚").slice(0, 12), portrait: Number(body.portrait || 0), ...safe, storyPreferences, promptConstraints } });
 }

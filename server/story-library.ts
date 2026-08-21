@@ -1,4 +1,9 @@
-import type { Preset, StatDelta, StoryChoice, StoryNode } from "./types";
+import "server-only";
+import type { Preset, StatDelta, StoryChoice, StoryNode } from "@/lib/types";
+import type { StoryLibraryRecord } from "@/server/story-types";
+import { additionalStories } from "@/server/additional-stories";
+
+export type { StoryLibraryRecord } from "@/server/story-types";
 
 const makeChoice = (id: string, index: number, label: string, hint: string, outcome: string, memory: string, deltas: StatDelta): StoryChoice => ({
   id, label, hint, outcome, memory, deltas,
@@ -152,19 +157,16 @@ const nodes: StoryNode[] = [
   },
 ];
 
-export const presets: Preset[] = [{
+const linCheStory: StoryLibraryRecord = {
   id: "test-story", name: "林澈", age: 28, portrait: 0, theme: "裁员后的职业重建", color: "#806594",
+  status: "published", version: "1.0.0", sourceType: "team", consentConfirmed: true, publishedAt: "2026-08-21T00:00:00+08:00",
   tagline: "从接受阶段性帮助，到同时承担全职招聘与自由项目，再到授权和晋升谈判。她真正寻找的不是下一份工作，而是一种不再依靠透支证明自己的工作方式。",
   situation: "28岁，过去事业和感情都很顺利，近期突然被裁员。求职没有回音，经济压力与自我怀疑同时出现。",
   nodes,
-}];
+};
 
-export const comingSoon = [
-  { name: "亲密关系", note: "故事骨架待团队审核" },
-  { name: "婚育与事业", note: "故事骨架待团队审核" },
-  { name: "城市与归属", note: "故事骨架待团队审核" },
-  { name: "留学与教育", note: "故事骨架待团队审核" },
-];
+export const presets: StoryLibraryRecord[] = [linCheStory, ...additionalStories];
+
+export const comingSoon: Array<{ name: string; note: string }> = [];
 
 export const getPreset = (id: string) => presets.find((preset) => preset.id === id);
-export const portraits = [{ id: 0, name: "林澈 · 测试立绘", colors: ["#e8d7d4", "#51435f"] }];
